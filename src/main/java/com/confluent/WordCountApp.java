@@ -35,27 +35,17 @@ public class WordCountApp {
         return config;
     }
 
-    private static Topology createTopology() {
+    protected static Topology createTopology() {
         StreamsBuilder builder = new StreamsBuilder();
-        //build stream from topic
         KStream<String, String> textLines = builder.stream(SOURCE_TOPIC_WORD_COUNT_INPUT);
         KTable<String, Long> wordCounts = textLines
-                // map values to lower case - stateless
                 .mapValues(textLine -> textLine.toLowerCase())
-                // flat map values splitting into tokens separated by non-alphanumeric characters
-                // meaning spaces for example
                 .flatMapValues(textLine -> Arrays.asList(textLine.split("\\W+")))
-                // repartition using value as key for the group by key after
                 .selectKey((key, word) -> word)
-                // group by key before count
                 .groupByKey()
-                // materialize into a store named Counts
                 .count(Materialized.as("Counts"));
-
-        // stream output to a topic
         wordCounts.toStream().to(SINK_TOPIC_WORD_COUNT_OUTPUT,
                 Produced.with(Serdes.String(), Serdes.Long()));
-        //return the topology
         return builder.build();
     }
 
