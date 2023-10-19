@@ -30,4 +30,42 @@ Before in case you need to reset just execute the Reset slide step.
 5. Extract Topology and visualize
 6. Write something and see consumer getting updated
 7. Show the topics created for suppporting the app. Discuss their role and configuration.
-8. Optionally execute the consumer on the changelog topic.
+
+
+### Commands Details
+
+#### Reset Streams App and Clean Up Topics
+
+```bash
+kafka-streams-application-reset --application-id wordcount-app --input-topics word-count-input
+kafka-topics --bootstrap-server localhost:9092 --delete --topic word-count-input
+kafka-topics --bootstrap-server localhost:9092 --delete --topic word-count-output
+```
+#### Create Topic
+
+kafka-topics --bootstrap-server localhost:9092 --topic word-count-input --create
+
+#### Start Producer
+
+```bash
+kafka-console-producer --bootstrap-server localhost:9092 --topic word-count-input
+```
+
+#### Start Consumer
+
+```bash
+kafka-console-consumer --bootstrap-server localhost:9092 --topic word-count-output --from-beginning --property print.key=true --property key.separator=- --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+```
+
+#### List Topics - hide internals
+
+```bash
+echo 'topics list except starting ones:'
+kafka-topics --bootstrap-server localhost:9092 --list --exclude-internal | sed /'^\_.*'/d | sed /'^connect-.*'/d | sed /'default_ksql_processing_log'/d
+```
+
+#### Consume on changelog
+
+```bash
+kafka-console-consumer --bootstrap-server localhost:9092 --topic wordcount-app-Counts-changelog --from-beginning --property print.key=true --property key.separator=- --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
+```
