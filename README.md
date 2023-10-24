@@ -1,34 +1,33 @@
 # Introduction to Kafka Streams
-Presentation to a customer of introduction to Kafka Streams.
-Based on slides https://docs.google.com/presentation/d/1bfXDT8kzQJ75xQFpoTASba65wJXMIUy5emglVaRluNA/edit?usp=sharing
-
-First slides are discussional and no demo until **Demo time**.
+Introduction to Kafka Streams.
 
 # Demo - WordCountApp
 
 ## Intellij IDE App
 
 ### pom.xml
-Start by showing a Java Maven based Kafka Streams application. Show the two critical dependencies of kafka-streams and kafka-streams-test-utils. 
+The Java Maven based Kafka Streams application. Two critical dependencies of kafka-streams and kafka-streams-test-utils. 
+The subdependencies includes the kafka client libraries for producer and consumer.
 
-### Topology
-Show the create topology method where all the DSL Kafka Streams code resides. Explain each step, which ones are stateful which ones trigger a repartition.
+### WordCountApp
 
-### Main
-Show the main method that basically depicts the structure of a Kafka Streams application.
+#### Topology
+The create topology method where all the DSL Kafka Streams code resides. Check each step, which ones are stateful which ones trigger a repartition.
 
-### config
+#### main
+The main method that basically depicts the structure of a Kafka Streams application.
+
+#### config
 The config method for the configuration required by a Kafka Streams application. Discuss the two non production configuration points.
 
-### Start CP Local
-Before in case you need to reset just execute the Reset slide step. 
+### Demo
 
 1. Create word-count-input topic
 2. Start producer
-3. Start Consumer on split panel (export paths if needed)
+3. Start Consumer on split panel 
 4. Start Kafka Streams app
 5. Extract Topology and visualize
-6. Write something and see consumer getting updated
+6. Write something and see consumer of output topic getting updated
 7. Show the topics created for suppporting the app. Discuss their role and configuration.
 
 
@@ -57,11 +56,11 @@ kafka-console-producer --bootstrap-server localhost:9092 --topic word-count-inpu
 kafka-console-consumer --bootstrap-server localhost:9092 --topic word-count-output --from-beginning --property print.key=true --property key.separator=- --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
 ```
 
-#### List Topics - hide internals
+#### List Topics 
 
 ```bash
 echo 'topics list except starting ones:'
-kafka-topics --bootstrap-server localhost:9092 --list --exclude-internal | sed /'^\_.*'/d | sed /'^connect-.*'/d | sed /'default_ksql_processing_log'/d
+kafka-topics --bootstrap-server localhost:9092 --list --exclude-internal 
 ```
 
 #### Consume on changelog
@@ -69,3 +68,11 @@ kafka-topics --bootstrap-server localhost:9092 --list --exclude-internal | sed /
 ```bash
 kafka-console-consumer --bootstrap-server localhost:9092 --topic wordcount-app-Counts-changelog --from-beginning --property print.key=true --property key.separator=- --property key.deserializer=org.apache.kafka.common.serialization.StringDeserializer --property value.deserializer=org.apache.kafka.common.serialization.LongDeserializer
 ```
+
+# Extra - WordCountProducer
+
+Basic producer that writes to same input topic the message written as input requested.
+
+# Extra - WordCountConsumer
+
+Basic consumer consuming from same input topic.
